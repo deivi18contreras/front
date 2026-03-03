@@ -56,7 +56,6 @@
           <q-card-actions vertical>
 
             <q-btn color="primary" label="Access Portal" class="full-width q-mb-sm" :loading="loading" @click="login" />
-
             <q-btn flat label="Crear Usuario" class="full-width" @click="creacionUsuarios" />
             <q-btn flat no-caps label="¿Olvidaste tu contraseña?" class="full-width text-caption q-mt-none"
               style="opacity: 0.7;" @click="recuperarPassword" />

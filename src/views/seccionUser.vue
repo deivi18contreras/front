@@ -1,247 +1,314 @@
 <template>
-  <q-page class="portal-page">
+  <q-page class="mystic-page stardust-bg">
+    <header class="mystic-header">
+      <q-btn flat round icon="chevron_left" color="grey-5" />
+      <h1 class="header-title">PREDICCIONES</h1>
+      <q-btn flat round class="notification-btn" icon="notifications" />
+    </header>
 
-    <!-- HEADER -->
-    <div class="top-header">
-
-      <div class="header-row">
-        <div class="brand">
-          <q-icon name="auto_awesome" />
-          <div class="title">PORTAL MÍSTICO</div>
-        </div>
-
-        <div class="header-actions">
-          <q-btn round flat icon="notifications" />
-          <q-avatar size="42px">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuANvVnTSnvzzLkpT6Wom5BAZ8s8qtj2dl2Z4zZPWlIIKh6gc64vqTmqpTQ6zDO42evyChWepxfhsq3YH1-_bc9LFG14RI6nBSf0psRI2x5xObBoc-05X8a7WiYLFqxh6lbfFFSgNA-sUsQaCccepC1qRPWDkdihz26v2M7p3RQX2xHY_W6QO2yPCeqp6VDRkmjq9BZbCN2zhnUxDak0V9fkZ1B51XM9ViufRI3GhYZlOiXBykkd4POoEUxLB-VWGhvlhsvnjFDiZuI" />
-          </q-avatar>
-        </div>
-      </div>
-
-      <!-- TABS -->
-      <div class="nav-tabs">
-        <div :class="['tab', activeTab === 'readings' && 'tab-active']" @click="activeTab = 'readings'">
-          <q-icon name="auto_stories" />
-          <span>Lecturas</span>
-        </div>
-
-        <div :class="['tab', activeTab === 'membership' && 'tab-active']" @click="activeTab = 'membership'">
-          <q-icon name="card_membership" />
-          <span>Membresía</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- READINGS -->
-      <div v-if="activeTab === 'readings'">
-
-        <q-btn class="gold-button full-width q-mb-lg">
-          <q-icon name="star" />
-          GENERAR LECTURA
-        </q-btn>
-
-        <q-card class="glass-card q-mb-lg">
-          <q-card-section>
-
-            <div class="reading-header">
-              <div class="number-box">22</div>
-              <div>
-                <div class="reading-title">Número Maestro 22</div>
-                <div class="reading-sub">El Arquitecto del Cosmos</div>
-              </div>
+    <div class="q-px-md q-pt-lg space-y-8">
+      <section>
+        <div class="hero-container">
+          <div class="hero-glow"></div>
+          <q-card flat class="glass-card hero-card">
+            <div class="hero-icon-bg">
+              <q-icon name="brightness_high" size="120px" />
             </div>
-
-            <p class="reading-text">
-              Tu frecuencia actual resuena con la maestría de la construcción universal...
+            <div class="forecast-badge">
+              <q-icon name="wb_sunny" size="14px" />
+              <span>DAILY FORECAST</span>
+            </div>
+            <h2 class="text-h5 text-weight-bold q-mb-sm">Sintonía con el Universo</h2>
+            <p class="text-description">
+              Hoy, los números indican una fuerte conexión con tu intuición. Es el momento perfecto para tomar decisiones que habías estado postergando. La energía del 7 te guía hacia la verdad interior.
             </p>
+          </q-card>
+        </div>
+      </section>
 
-            <div class="reading-buttons">
-              <q-btn flat icon="share">Compartir</q-btn>
-              <q-btn flat icon="auto_awesome_motion">Guardar</q-btn>
+      <section>
+        <div class="row items-center justify-between q-mb-md">
+          <h2 class="section-title">Tránsitos Planetarios</h2>
+          <q-icon name="rocket_launch" color="primary" size="xs" />
+        </div>
+        
+        <div class="planetary-scroll hide-scrollbar">
+          <div v-for="planet in planets" :key="planet.name" class="planet-card glass-card">
+            <div class="planet-icon-container" :style="`border-color: ${planet.color}44; background: ${planet.color}11`">
+              <q-icon :name="planet.icon" :style="`color: ${planet.color}`" size="sm" />
             </div>
+            <div class="text-center">
+              <p class="planet-label">{{ planet.name }}</p>
+              <p class="planet-status">{{ planet.status }}</p>
+            </div>
+            <q-linear-progress :value="planet.progress" :style="`color: ${planet.color}`" class="q-mt-xs" />
+          </div>
+        </div>
+      </section>
 
-          </q-card-section>
-        </q-card>
+      <section class="q-gutter-y-md">
+        <h2 class="section-title">Perspectivas</h2>
+        
+        <div class="outlook-card glass-card border-left-primary">
+          <div class="outlook-icon-box bg-primary-10">
+            <q-icon name="calendar_month" color="primary" size="md" />
+          </div>
+          <div class="q-ml-md">
+            <div class="row items-center q-gutter-x-sm q-mb-xs">
+              <h3 class="outlook-title">Monthly Outlook</h3>
+              <span class="outlook-badge bg-primary-20 text-primary">FEBRERO</span>
+            </div>
+            <p class="outlook-desc">Un mes de consolidación financiera y expansión en relaciones profesionales. Tus números maestros están activos.</p>
+          </div>
+        </div>
 
-      </div>
+        <div class="outlook-card glass-card border-left-purple">
+          <div class="outlook-icon-box bg-purple-10">
+            <q-icon name="cycle" color="purple-4" size="md" />
+          </div>
+          <div class="q-ml-md">
+            <div class="row items-center q-gutter-x-sm q-mb-xs">
+              <h3 class="outlook-title">Yearly Vibration</h3>
+              <span class="outlook-badge bg-purple-20 text-purple-4">2024</span>
+            </div>
+            <p class="outlook-desc">Vibración anual 8: El año de la cosecha. Recibirás recompensas por el trabajo duro de los últimos tres años.</p>
+          </div>
+        </div>
+      </section>
 
-      <!-- MEMBERSHIP -->
-      <div v-if="activeTab === 'membership'">
-
-        <q-card class="glass-card">
-          <q-card-section>
-            <div class="membership-title">Nivel Premium</div>
-            <div class="membership-status">Activa</div>
-          </q-card-section>
-        </q-card>
-
-      </div>
-
+      <section class="q-pb-xl">
+        <div class="premium-banner">
+          <p class="premium-label">CONTENIDO EXCLUSIVO</p>
+          <p class="premium-text">Desbloquea predicciones personalizadas para cada área de tu vida (Amor, Dinero, Salud).</p>
+          <q-btn unelevated color="primary" text-color="black" label="MEJORAR A PREMIUM" class="premium-btn" />
+        </div>
+      </section>
     </div>
-
-    <!-- BOTTOM BAR -->
-    <div class="bottom-bar">
-      <div class="home-indicator"></div>
-    </div>
-
   </q-page>
 </template>
 
 <script setup>
-import { ref } from "vue";
-
-const activeTab = ref("readings");
+const planets = [
+  { name: 'MARTE', status: 'En Leo', icon: 'brightness_low', color: '#fb923c', progress: 0.75 },
+  { name: 'LUNA', status: 'Creciente', icon: 'mode_night', color: '#60a5fa', progress: 0.5 },
+  { name: 'SOL', status: 'En Acuario', icon: 'wb_sunny', color: '#f4d125', progress: 1 },
+  { name: 'VENUS', status: 'En Piscis', icon: 'star', color: '#c084fc', progress: 0.25 }
+]
 </script>
 
 <style scoped>
-/* PAGE */
-
-.portal-page {
+/* CONFIGURACIÓN DE COLORES Y FONDO */
+.mystic-page {
+  background-color: #1a1625;
+  color: #f1f5f9;
   min-height: 100vh;
-  background: radial-gradient(circle at top right, #4A148C, #0F021A);
-  color: white;
+}
+
+.stardust-bg {
+  background-image: radial-gradient(circle at 2px 2px, rgba(244, 209, 37, 0.08) 1px, transparent 0);
+  background-size: 32px 32px;
 }
 
 /* HEADER */
-
-.top-header {
+.mystic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
   position: sticky;
   top: 0;
-  backdrop-filter: blur(18px);
-  background: rgba(0, 0, 0, 0.5);
-  padding: 24px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  z-index: 10;
+  background: rgba(26, 22, 37, 0.8);
+  backdrop-filter: blur(10px);
 }
 
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #f4d125;
+  margin: 0;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--q-primary);
-  font-weight: bold;
-  font-size: 20px;
+.notification-btn {
+  background: rgba(244, 209, 37, 0.1);
+  color: #f4d125;
 }
 
-.header-actions {
-  display: flex;
-  gap: 12px;
-}
-
-/* TABS */
-
-.nav-tabs {
-  display: flex;
-  justify-content: space-around;
-}
-
-.tab {
-  opacity: 0.4;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.tab-active {
-  opacity: 1;
-  color: var(--q-primary);
-}
-
-/* CONTENT */
-
-.content {
-
-  max-width: 100vw;
-  margin: auto;
-}
-
-/* CARDS */
-
+/* GLASS CARD BASE */
 .glass-card {
-  background: rgba(74, 20, 140, 0.15);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
-  border-radius: 18px;
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(244, 209, 37, 0.1);
+  border-radius: 1rem;
 }
 
-/* GOLD BUTTON */
-
-.gold-button {
-  background: linear-gradient(145deg, #D4AF37, #B8860B);
-  color: black;
-  font-weight: bold;
+/* HERO SECTION */
+.hero-container {
+  position: relative;
 }
 
-/* READING */
+.hero-glow {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(to bottom right, rgba(244, 209, 37, 0.2), rgba(147, 51, 234, 0.2));
+  border-radius: 1.25rem;
+  filter: blur(8px);
+  opacity: 0.4;
+}
 
-.reading-header {
+.hero-card {
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.hero-icon-bg {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  opacity: 0.1;
+  color: #f4d125;
+}
+
+.forecast-badge {
   display: flex;
-  gap: 18px;
   align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: rgba(244, 209, 37, 0.8);
+  margin-bottom: 1rem;
 }
 
-.number-box {
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
-  background: rgba(212, 175, 55, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  color: var(--q-primary);
-  font-weight: bold;
-}
-
-.reading-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.reading-sub {
-  opacity: 0.6;
-}
-
-.reading-text {
-  margin-top: 20px;
-  opacity: 0.8;
+.text-description {
+  color: #cbd5e1;
   line-height: 1.6;
+  font-size: 0.875rem;
 }
 
-.reading-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+/* PLANETARY SCROLL */
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-/* BOTTOM BAR */
-
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 46px;
-  background: rgba(0, 0, 0, 0.6);
+.planetary-scroll {
   display: flex;
-  justify-content: center;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.planet-card {
+  flex: 0 0 120px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 0.75rem;
 }
 
-.home-indicator {
-  width: 140px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+.planet-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.planet-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.planet-status {
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* OUTLOOK CARDS */
+.outlook-card {
+  display: flex;
+  padding: 1.25rem;
+  align-items: flex-start;
+}
+
+.border-left-primary { border-left: 4px solid #f4d125; }
+.border-left-purple { border-left: 4px solid #a855f7; }
+
+.outlook-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bg-primary-10 { background: rgba(244, 209, 37, 0.1); }
+.bg-purple-10 { background: rgba(168, 85, 247, 0.1); }
+
+.outlook-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.outlook-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.bg-primary-20 { background: rgba(244, 209, 37, 0.2); }
+.bg-purple-20 { background: rgba(168, 85, 247, 0.2); }
+
+.outlook-desc {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin: 0.25rem 0 0 0;
+}
+
+/* PREMIUM BANNER */
+.premium-banner {
+  background: linear-gradient(to bottom right, rgba(45, 27, 77, 0.5), #1a1625);
+  border: 1px solid rgba(244, 209, 37, 0.2);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.premium-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #f4d125;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+}
+
+.premium-text {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.premium-btn {
+  width: 100%;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  padding: 0.75rem;
+}
+
+/* UTILS */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>

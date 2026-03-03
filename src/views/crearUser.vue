@@ -71,6 +71,7 @@
 
             <q-card-actions>
               <q-btn label="Crear Cuenta" class="gold-button full-width" :loading="loading"  @click="crearUsuario()" />
+              <p class="texto">Ya tienes una cuenta?  <a href="./loginUsers.vue">Iniciar Sesión</a></p>
             </q-card-actions>
 
           </q-card>
@@ -104,19 +105,11 @@ const password = ref("");
 const fechaNacimiento = ref("");
 const loading = ref(false)
 
-const crearCuenta = () => {
-  console.log("Crear usuario", {
-    username: username.value,
-    email: email.value,
-    password: password.value,
-    fechaNacimiento: fechaNacimiento.value
-  });
-  router.push("/")
-
-  // luego conectamos backend
-};
-
 const crearUsuario = async () =>{
+if(!username.value || !email.value || !password || !fechaNacimiento){
+  errorAlert("Por favor, rellene todos los campos", "Para crear la cuenta")
+}
+  loading.value = true
   try {
     const Usuario = await postData("usuario", {
       nombre: username.value,
@@ -126,8 +119,9 @@ const crearUsuario = async () =>{
       rol:"user"
     })
     if (Usuario) {
-      router.push("/")
       success("Bienvenido a su linea de vida")
+      router.push("/")
+      
     }
     
   } catch (error) {
@@ -321,6 +315,11 @@ const crearUsuario = async () =>{
   font-size: 12px;
   opacity: 0.25;
   text-align: center;
+}
+
+.texto{
+  margin-left: 20%;
+  margin-top: 15px;
 }
 
 /* ===== RESPONSIVE ===== */
