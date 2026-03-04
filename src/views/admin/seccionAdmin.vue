@@ -1,54 +1,53 @@
 <template>
-  <q-page class="admin-page">
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
+      <q-page class="admin-page">
 
-    <!-- HEADER -->
-    <div class="top-header">
+        <div class="top-header">
 
-      <div class="header-row">
-        <div class="title">Portal</div>
+          <div class="header-row">
+            <div class="title">Portal</div>
 
-        <div class="actions">
-          <q-btn round flat icon="notifications" />
-          <q-avatar size="38px">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuANvVnTSnvzzLkpT6Wom5BAZ8s8qtj2dl2Z4zZPWlIIKh6gc64vqTmqpTQ6zDO42evyChWepxfhsq3YH1-_bc9LFG14RI6nBSf0psRI2x5xObBoc-05X8a7WiYLFqxh6lbfFFSgNA-sUsQaCccepC1qRPWDkdihz26v2M7p3RQX2xHY_W6QO2yPCeqp6VDRkmjq9BZbCN2zhnUxDak0V9fkZ1B51XM9ViufRI3GhYZlOiXBykkd4POoEUxLB-VWGhvlhsvnjFDiZuI" />
-          </q-avatar>
+            <div class="actions">
+              <q-btn round flat icon="notifications" />
+              <q-avatar size="38px">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuANvVnTSnvzzLkpT6Wom5BAZ8s8qtj2dl2Z4zZPWlIIKh6gc64vqTmqpTQ6zDO42evyChWepxfhsq3YH1-_bc9LFG14RI6nBSf0psRI2x5xObBoc-05X8a7WiYLFqxh6lbfFFSgNA-sUsQaCccepC1qRPWDkdihz26v2M7p3RQX2xHY_W6QO2yPCeqp6VDRkmjq9BZbCN2zhnUxDak0V9fkZ1B51XM9ViufRI3GhYZlOiXBykkd4POoEUxLB-VWGhvlhsvnjFDiZuI" />
+              </q-avatar>
+            </div>
+          </div>
+
+          <q-input
+            filled
+            dark
+            dense
+            placeholder="Search users or readings..."
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+
+          <div class="nav-tabs">
+             
+            <q-btn flat icon="people"  @click="irUsuarios()" />
+            <q-btn flat icon="payments" @click="irPagos()" />
+            <q-btn flat icon="auto_awesome" @click="irDashboard()" />
+          </div>
         </div>
-      </div>
 
-      <!-- SEARCH -->
-      <q-input
-        filled
-        dark
-        dense
-        placeholder="Search users or readings..."
-      >
-        <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-      </q-input>
+        <div class="content">
 
-      <!-- NAV -->
-      <div class="nav-tabs">
-        <q-btn flat icon="dashboard" class="active-tab" />
-        <q-btn flat icon="people"  @click="irUsuarios()" />
-        <q-btn flat icon="payments" @click="irPagos()"/>
-        <q-btn flat icon="auto_awesome" @click="irDashboard()"/>
-      </div>
-    </div>
+         <router-view />
 
-    <!-- CONTENT -->
-    <div class="content">
+        </div>
 
-     <router-view />
+        <div class="bottom-bar">
+          <div class="home-indicator"></div>
+        </div>
 
-    </div>
-
-    <!-- BOTTOM BAR -->
-    <div class="bottom-bar">
-      <div class="home-indicator"></div>
-    </div>
-
-  </q-page>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup>

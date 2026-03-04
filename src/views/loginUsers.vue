@@ -108,7 +108,7 @@ const login = async () => {
     const rol = res.data.usuario.rol;
 
     if (rol === "admin") {
-      router.push("/seccionAdmin");
+      router.push("/admin");
     } else {
       router.push("/seccionUser");
     }
