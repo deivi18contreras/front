@@ -30,93 +30,16 @@
       <!-- NAV -->
       <div class="nav-tabs">
         <q-btn flat icon="dashboard" class="active-tab" />
-        <q-btn flat icon="people" />
-        <q-btn flat icon="payments" />
-        <q-btn flat icon="auto_awesome" />
+        <q-btn flat icon="people"  @click="irUsuarios()" />
+        <q-btn flat icon="payments" @click="irPagos()"/>
+        <q-btn flat icon="auto_awesome" @click="irDashboard()"/>
       </div>
     </div>
 
     <!-- CONTENT -->
     <div class="content">
 
-      <!-- USERS -->
-      <section>
-        <div class="section-header">
-          <div>Registered Users</div>
-          <q-btn flat label="See All" size="sm" />
-        </div>
-
-        <div class="users-row">
-          <div class="user-circle add-user">
-            <q-icon name="add" />
-          </div>
-
-          <q-avatar size="56px" v-for="user in users" :key="user.name">
-            <img :src="user.img" />
-          </q-avatar>
-        </div>
-      </section>
-
-      <!-- PAYMENTS -->
-      <section>
-        <div class="section-header">
-          <div>Recent Payments</div>
-          <div class="badge">Today</div>
-        </div>
-
-        <q-card class="glass-card" flat>
-          <q-list dark separator>
-
-            <q-item v-for="payment in payments" :key="payment.title">
-              <q-item-section avatar>
-                <div class="payment-icon">
-                  <q-icon name="arrow_downward" />
-                </div>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>{{ payment.title }}</q-item-label>
-                <q-item-label caption>{{ payment.desc }}</q-item-label>
-              </q-item-section>
-
-              <q-item-section side class="text-primary text-weight-bold">
-                {{ payment.amount }}
-              </q-item-section>
-            </q-item>
-
-          </q-list>
-        </q-card>
-      </section>
-
-      <!-- READINGS -->
-      <section>
-        <div class="section-header">
-          <div>Recent Readings</div>
-        </div>
-
-        <div class="readings">
-
-          <q-card class="glass-card reading-card" flat>
-            <div class="number-circle">11</div>
-
-            <div class="reading-content">
-              <div class="reading-title">
-                Master Number 11 Analysis
-              </div>
-
-              <div class="reading-sub">
-                Client: Elena Rodriguez
-              </div>
-
-              <div class="reading-buttons">
-                <q-btn color="primary" label="Review" />
-                <q-btn flat label="Share" />
-              </div>
-            </div>
-          </q-card>
-
-        </div>
-      </section>
+     <router-view />
 
     </div>
 
@@ -129,6 +52,12 @@
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+
+const router = useRouter()
+
+
 const users = [
   { name: "Elena", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUTQDppHpJaPvCwQ0imSRTZgKegeVld8_QfeTtnHn1TQIN1RWUW2pK9t7m9Gb7zSfnnta_gAcQboWxGg4BrM5TX9Mkl9smOwOWioJfiuc-sklvKP4F9rt3Pzdx88scC_dqLf8NFc3an4iBKon6995EjxSg1IvcLn__TC28ttroARnXq2A8S2Z--MUHVbVfNclMdBoa0zdqbb2ADCqZqvmdT10SZexqPVYMG38JvSzeroK5aEwI1UOQLtSKG8Lj-HodAd8k0Z3wXOA" },
   { name: "Marcus", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoEfCRXs28qY0580HvFRU6qBhm8eEtNl3eQNkzLiB60PV43tBqfExCvoW8ajL-lBj22NHKS_LJDOzYL7bZJFU6PhF9HojjRuvHUHxy_vXHL7V0ztACiASZ7hrOKUWjHwDxdoJI-JRekSwO34_90uyRkO_mcp3A6b4T3rb3IPxnNxBoY49y3_CzTYv0tR0id-vVew7n8UOeFjQ69HdrmcThbmBpEAoY9lxy5nUTFedm0hQnT2WouJAvKaJH_PDYPie4w9Zerbe_DaE" }
@@ -138,6 +67,20 @@ const payments = [
   { title: "Premium Chart", desc: "24 Oct • #TRX-992", amount: "$49.00" },
   { title: "Yearly Forecast", desc: "24 Oct • #TRX-988", amount: "$129.00" }
 ]
+
+ 
+
+function irDashboard() {
+  router.push("/admin")
+}
+
+function irUsuarios() {
+  router.push("/admin/usuarios")
+}
+
+function irPagos() {
+  router.push("/admin/pagos")
+}
 </script>
 
 <style scoped>
@@ -192,6 +135,8 @@ const payments = [
 .content {
   padding: 20px;
   padding-bottom: 90px;
+  width: 500px;
+  height: 500px;
 }
 
 .section-header {
