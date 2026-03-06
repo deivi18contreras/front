@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import {Quasar, Notify, Dialog} from 'quasar'
+import {Quasar, Notify, Dialog, Loading} from 'quasar'
 import { createPinia } from 'pinia'
 import '@quasar/extras/material-icons/material-icons.css'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -16,7 +16,8 @@ pinia.use(piniaPluginPersistedstate)
 myApp.use(Quasar,{
     plugins: {
         Notify,
-        Dialog
+        Dialog,
+        Loading
     },
 })
 myApp.use(pinia)

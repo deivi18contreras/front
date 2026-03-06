@@ -102,7 +102,11 @@ const login = async () => {
       password: password.value,
     });
 
-    authStore.token = (res.data.token, res.data.usuario.nombre);
+    authStore.token = res.data.token;
+    authStore.usuario = res.data.usuario;
+    authStore.rol = res.data.usuario.rol;
+    authStore.sessionStart = new Date().toISOString();
+    
     success(`Bienvenido, ${res.data.usuario.nombre || 'user'}!`, "login success")
 
     const rol = res.data.usuario.rol;

@@ -1,11 +1,11 @@
 <template>
-  <q-drawer v-model="drawer" side="right" overlay width="420" class="glass-panel text-white">
+  <q-drawer v-model="drawer" side="right" overlay :width="420" class="glass-panel text-white">
     <!-- HEADER -->
     <div class="notif-header">
       <div class="row items-center q-gutter-sm">
         <q-icon name="notifications_active" color="primary" size="28px" />
         <div class="text-h6 text-weight-bold">
-          Cosmic Alerts
+          Alertas Cósmicas
         </div>
       </div>
 
@@ -14,110 +14,72 @@
 
     <!-- FILTROS -->
     <div class="notif-filters">
-      <q-btn unelevated label="ALL" color="primary" size="sm" rounded />
-      <q-btn flat label="UNREAD" color="grey-5" size="sm" rounded />
-      <q-btn flat label="ARCHIVED" color="grey-5" size="sm" rounded />
+      <q-btn 
+        :unelevated="filtro === 'ALL'" 
+        :flat="filtro !== 'ALL'" 
+        label="TODAS" 
+        color="primary" 
+        size="sm" 
+        rounded 
+        @click="filtro = 'ALL'" 
+      />
+      <q-btn 
+        :unelevated="filtro === 'UNREAD'" 
+        :flat="filtro !== 'UNREAD'" 
+        label="NO LEÍDAS" 
+        color="primary" 
+        size="sm" 
+        rounded 
+        @click="filtro = 'UNREAD'" 
+      />
     </div>
 
     <!-- LISTA -->
     <div class="notif-content">
 
-      <!-- CARD 1 -->
-      <div class="notif-card">
+      <div v-if="loading" class="text-center q-pa-md">
+        <q-spinner-dots color="primary" size="40px" />
+      </div>
+
+      <div v-else-if="notificacionesFiltradas.length === 0" class="text-center q-pa-xl text-grey-5">
+        <q-icon name="bedtime" size="60px" class="q-mb-md opacity-20" />
+        <div>Las estrellas están silenciosas por ahora...</div>
+      </div>
+
+      <!-- CARDS DINÁMICAS -->
+      <div v-for="notif in notificacionesFiltradas" :key="notif._id" 
+           class="notif-card" :class="{ 'opacity-80': notif.leida }">
         <div class="row justify-between items-start">
 
           <div class="row items-center q-gutter-sm">
-            <div class="icon-box blue">
-              <q-icon name="auto_stories" />
+            <div class="icon-box" :class="notif.tipo === 'lectura' ? 'blue' : notif.tipo === 'password' ? 'primary' : 'grey'">
+              <q-icon :name="notif.tipo === 'lectura' ? 'auto_stories' : notif.tipo === 'password' ? 'lock' : 'system_update'" />
             </div>
 
             <div>
-              <div class="notif-tag text-blue">
-                New Alignment
+              <div class="notif-tag" :class="notif.tipo === 'lectura' ? 'text-blue' : notif.tipo === 'password' ? 'text-primary' : 'text-grey-5'">
+                {{ notif.tipo }}
               </div>
               <div class="notif-title">
-                Your reading is ready
+                {{ notif.titulo }}
               </div>
             </div>
           </div>
 
           <div class="row items-center q-gutter-xs">
             <div class="text-caption text-grey-5">
-              2m ago
+              {{ formatTime(notif.fecha) }}
             </div>
-            <div class="glow-dot"></div>
+            <div v-if="!notif.leida" class="glow-dot"></div>
           </div>
         </div>
 
         <div class="notif-text">
-          The AI has finished calculating your personalized cosmic alignment.
+          {{ notif.mensaje }}
         </div>
 
-        <div class="row q-gutter-sm q-mt-sm">
-          <q-btn size="sm" color="primary" label="View Reading" unelevated />
-          <q-btn size="sm" flat label="Dismiss" color="grey-4" />
-        </div>
-      </div>
-
-      <!-- CARD 2 -->
-      <div class="notif-card">
-        <div class="row justify-between items-start">
-
-          <div class="row items-center q-gutter-sm">
-            <div class="icon-box primary">
-              <q-icon name="system_update" />
-            </div>
-
-            <div>
-              <div class="notif-tag text-primary">
-                Updates
-              </div>
-              <div class="notif-title">
-                System Update available
-              </div>
-            </div>
-          </div>
-
-          <div class="text-caption text-grey-5">
-            1h ago
-          </div>
-        </div>
-
-        <div class="notif-text">
-          Aetheris v2.4 brings improved celestial pattern matching.
-        </div>
-
-        <div class="update-box">
-          <q-icon name="star_rate" size="40px" />
-        </div>
-      </div>
-
-      <!-- CARD 3 -->
-      <div class="notif-card opacity-80">
-        <div class="row justify-between items-start">
-
-          <div class="row items-center q-gutter-sm">
-            <div class="icon-box grey">
-              <q-icon name="forum" />
-            </div>
-
-            <div>
-              <div class="notif-tag text-grey-5">
-                Community
-              </div>
-              <div class="notif-title">
-                New comment on your post
-              </div>
-            </div>
-          </div>
-
-          <div class="text-caption text-grey-5">
-            3h ago
-          </div>
-        </div>
-
-        <div class="notif-text italic">
-          "This alignment really resonated with my current life path journey..."
+        <div v-if="!notif.leida" class="row q-gutter-sm q-mt-sm">
+          <q-btn size="sm" color="primary" label="Marcar como leída" unelevated @click="marcarLeida(notif._id)" />
         </div>
       </div>
 
@@ -125,19 +87,120 @@
 
     <!-- FOOTER -->
     <div class="notif-footer">
-      <q-btn outline color="primary" icon="settings" label="Notification Preferences" class="full-width" />
+      <q-btn outline color="primary" icon="settings" label="Preferencias de Notificación" class="full-width" @click="abrirPreferencias" />
     </div>
 
   </q-drawer>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getData, putData } from '../services/services.js'
+import { useAuthStore } from '../store/Auth.js'
+import { useQuasar } from 'quasar'
 
 const drawer = ref(false)
+const notificaciones = ref([])
+const loading = ref(false)
+const filtro = ref('ALL')
+const authStore = useAuthStore()
+const $q = useQuasar()
+
+const notificacionesFiltradas = computed(() => {
+  if (filtro.value === 'ALL') return notificaciones.value
+  return notificaciones.value.filter(n => !n.leida)
+})
+
+const fetchNotificaciones = async () => {
+  loading.value = true
+  try {
+    const res = await getData('notificaciones')
+    if (res.ok) {
+      notificaciones.value = res.notificaciones
+      actualizarContador()
+    }
+  } catch (error) {
+    console.error('Error al cargar notificaciones:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const actualizarContador = () => {
+  const noLeidas = notificaciones.value.filter(n => !n.leida).length
+  authStore.unreadCount = noLeidas
+}
+
+const marcarLeida = async (id) => {
+  try {
+    await putData(`notificaciones/${id}`)
+    const index = notificaciones.value.findIndex(n => n._id === id)
+    if (index !== -1) {
+      notificaciones.value[index].leida = true
+      actualizarContador()
+    }
+  } catch (error) {
+    console.error('Error al marcar como leída:', error)
+  }
+}
+
+const formatTime = (date) => {
+  const now = new Date()
+  const diff = now - new Date(date)
+  const minutes = Math.floor(diff / 1000 / 60)
+  if (minutes < 1) return 'Recién'
+  if (minutes < 60) return `Hace ${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `Hace ${hours}h`
+  return new Date(date).toLocaleDateString()
+}
+
+const abrirPreferencias = () => {
+  if (!authStore.usuario.prefsNotif) {
+    authStore.usuario.prefsNotif = { lectura: true, password: true, sistema: true }
+  }
+
+  $q.dialog({
+    title: 'Preferencias de Notificación',
+    message: 'Elige qué alertas deseas recibir del cosmos:',
+    dark: true,
+    options: {
+      type: 'checkbox',
+      model: [],
+      items: [
+        { label: 'Lecturas Diarias', value: 'lectura' },
+        { label: 'Seguridad (Contraseñas)', value: 'password' },
+        { label: 'Actualizaciones del Sistema', value: 'sistema' }
+      ]
+    },
+    cancel: true,
+    persistent: true
+  }).onOk(async (selected) => {
+    const newPrefs = {
+      lectura: selected.includes('lectura'),
+      password: selected.includes('password'),
+      sistema: selected.includes('sistema')
+    }
+
+    try {
+      await putData(`usuario/${authStore.usuario._id}`, { prefsNotif: newPrefs })
+      authStore.usuario.prefsNotif = newPrefs
+      $q.notify({ color: 'positive', message: 'Preferencias actualizadas', icon: 'check' })
+    } catch (error) {
+      $q.notify({ color: 'negative', message: 'Error al actualizar preferencias' })
+    }
+  })
+}
+
+onMounted(() => {
+    fetchNotificaciones() 
+})
 
 defineExpose({
-  openDrawer: () => drawer.value = true
+  openDrawer: () => {
+    drawer.value = true
+    fetchNotificaciones()
+  }
 })
 </script>
 
@@ -231,17 +294,6 @@ defineExpose({
   border-radius: 50%;
   background: #4cc9f0;
   box-shadow: 0 0 8px #4cc9f0;
-}
-
-.update-box {
-  height: 90px;
-  border-radius: 12px;
-  margin-top: 10px;
-  background: linear-gradient(to right, #191022, #302839);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.3;
 }
 
 .notif-footer {
