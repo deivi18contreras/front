@@ -52,12 +52,30 @@
         <div class="row justify-between items-start">
 
           <div class="row items-center q-gutter-sm">
-            <div class="icon-box" :class="notif.tipo === 'lectura' ? 'blue' : notif.tipo === 'password' ? 'primary' : 'grey'">
-              <q-icon :name="notif.tipo === 'lectura' ? 'auto_stories' : notif.tipo === 'password' ? 'lock' : 'system_update'" />
+            <div class="icon-box" :class="{
+              'blue': notif.tipo === 'lectura', 
+              'primary': notif.tipo === 'password', 
+              'amber': notif.tipo === 'registro',
+              'green': notif.tipo === 'pago',
+              'grey': !['lectura', 'password', 'registro', 'pago'].includes(notif.tipo)
+            }">
+              <q-icon :name="
+                notif.tipo === 'lectura' ? 'auto_stories' : 
+                notif.tipo === 'password' ? 'lock' : 
+                notif.tipo === 'registro' ? 'person_add' :
+                notif.tipo === 'pago' ? 'monetization_on' :
+                'system_update'" 
+              />
             </div>
 
             <div>
-              <div class="notif-tag" :class="notif.tipo === 'lectura' ? 'text-blue' : notif.tipo === 'password' ? 'text-primary' : 'text-grey-5'">
+              <div class="notif-tag" :class="{
+                'text-blue': notif.tipo === 'lectura', 
+                'text-primary': notif.tipo === 'password', 
+                'text-amber': notif.tipo === 'registro',
+                'text-positive': notif.tipo === 'pago',
+                'text-grey-5': !['lectura', 'password', 'registro', 'pago'].includes(notif.tipo)
+              }">
                 {{ notif.tipo }}
               </div>
               <div class="notif-title">
@@ -280,6 +298,18 @@ defineExpose({
   background: rgba(140, 43, 238, 0.1);
   border: 1px solid rgba(140, 43, 238, 0.2);
   color: #8c2bee;
+}
+
+.icon-box.amber {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.icon-box.green {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #22c55e;
 }
 
 .icon-box.grey {

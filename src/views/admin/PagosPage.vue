@@ -5,19 +5,46 @@
       <p class="text-deep-purple-3 q-mt-sm">Control financiero y energía monetaria 💸</p>
     </div>
 
+    <!-- KPIs DE PAGOS -->
+    <div class="row q-col-gutter-md q-mb-lg justify-center">
+      <div class="col-12 col-sm-4">
+        <q-card dark bordered class="mystic-card text-center">
+          <q-card-section>
+            <div class="text-overline text-amber-5">Ingresos Totales</div>
+            <div class="text-h4 text-weight-bold">${{ totalIngresos }}</div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-4">
+        <q-card dark bordered class="mystic-card text-center" :class="{ 'alert-glow': suscripcionesVenciendo > 0 }">
+          <q-card-section>
+            <div class="text-overline text-amber-5">Vencen en 3 días</div>
+            <div class="text-h4 text-weight-bold">{{ suscripcionesVenciendo }} Almas</div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-4">
+        <q-btn 
+          class="full-width full-height export-btn" 
+          outline 
+          icon="description" 
+          label="Exportar a CSV" 
+          @click="exportarPagos"
+        />
+      </div>
+    </div>
+
     <div class="row q-mb-lg justify-center">
-      <div class="col-12 col-md-6 col-lg-4">
+      <div class="col-12 col-md-6">
         <q-input
           v-model="emailBuscar"
-          dark
-          outlined
-          color="amber"
+          dark outlined color="amber"
           label="Buscar por Email"
           class="mystic-input"
-          @keyup.enter="userEmail"
+          @keyup.enter="listPagos"
         >
           <template v-slot:append>
-            <q-btn round dense flat icon="search" color="amber" @click="userEmail" />
+            <q-btn round dense flat icon="search" color="amber" @click="listPagos" />
           </template>
         </q-input>
       </div>
@@ -29,28 +56,25 @@
           :rows="pagos"
           :columns="columns"
           row-key="_id"
-          dark
-          flat
-          bordered
+          dark flat bordered
           class="mystic-table"
-          card-class="bg-transparent"
         >
-          <template v-slot:body-cell-monto="props">
-            <q-td :props="props" class="text-amber text-weight-bold text-h6">
-              ${{ props.row.monto }}
-            </q-td>
-          </template>
-          
-          <template v-slot:body-cell-fecha="props">
-            <q-td :props="props">
-              {{ formatearFecha(props.row.fecha) }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-cancelacion="props">
-            <q-td :props="props" class="text-deep-purple-3 text-weight-medium">
-              {{ calcularCancelacion(props.row.fecha) }}
-            </q-td>
+          <template v-slot:body="props">
+            <q-tr :props="props" :class="getRowClass(props.row.fecha)">
+              <q-td key="usuarioId" :props="props">
+                {{ props.row.usuarioId?.email || 'N/A' }}
+              </q-td>
+              <q-td key="monto" :props="props" class="text-amber text-weight-bold">
+                ${{ props.row.monto }}
+              </q-td>
+              <q-td key="fecha" :props="props">
+                {{ formatDate(props.row.fecha) }}
+              </q-td>
+              <q-td key="cancelacion" :props="props">
+                {{ calcularVencimiento(props.row.fecha) }}
+                <q-badge v-if="estaVenciendo(props.row.fecha)" color="orange" floating rounded />
+              </q-td>
+            </q-tr>
           </template>
         </q-table>
       </div>
@@ -59,46 +83,83 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { getData } from '../../services/services'
+import { useQuasar, exportFile } from 'quasar'
 
-let pagos = ref([])
-let emailBuscar = ref("")
+const $q = useQuasar()
+const pagos = ref([])
+const emailBuscar = ref("")
 
-// 📌 Listar pagos
-async function listPagos(){
+const columns = [
+  { name: 'usuarioId', label: 'Buscador (Email)', align: 'left', field: row => row.usuarioId?.email },
+  { name: 'monto', label: 'Monto', align: 'center', field: 'monto' },
+  { name: 'fecha', label: 'Fecha de Pago', align: 'center', field: 'fecha' },
+  { name: 'cancelacion', label: 'Vencimiento', align: 'center' }
+]
+
+// Cálculos de KPIs
+const totalIngresos = computed(() => {
+  return pagos.value.reduce((acc, p) => acc + (Number(p.monto) || 0), 0)
+})
+
+const suscripcionesVenciendo = computed(() => {
+  return pagos.value.filter(p => estaVenciendo(p.fecha)).length
+})
+
+async function listPagos() {
   try {
-    let res = await getData("pagos")
-    pagos.value = res 
-    
-    console.log(res);
-    
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// 📌 Buscar por email (opcional)
-async function userEmail(){
-  try {
-    let res = await getData(`pagos?email=${emailBuscar.value}`)
+    let url = "pagos"
+    if (emailBuscar.value) url = `pagos?email=${emailBuscar.value}`
+    let res = await getData(url)
     pagos.value = res
-    console.log(pagos.value);
-    
   } catch (error) {
     console.log(error)
   }
 }
- 
-function formatearFecha(fecha){
-  const date = new Date(fecha)
-  return date.toLocaleDateString()
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString()
 }
- 
-function calcularCancelacion(fecha){
-  const date = new Date(fecha)
-  date.setMonth(date.getMonth() + 1)
-  return date.toLocaleDateString()
+
+function calcularVencimiento(fecha) {
+  const d = new Date(fecha)
+  d.setMonth(d.getMonth() + 1)
+  return d.toLocaleDateString()
+}
+
+function estaVenciendo(fecha) {
+  const v = new Date(fecha)
+  v.setMonth(v.getMonth() + 1)
+  const hoy = new Date()
+  const diff = (v - hoy) / (1000 * 60 * 60 * 24)
+  return diff >= 0 && diff <= 3
+}
+
+function getRowClass(fecha) {
+  const v = new Date(fecha)
+  v.setMonth(v.getMonth() + 1)
+  const hoy = new Date()
+  if (v < hoy) return 'row-expired'
+  if (estaVenciendo(fecha)) return 'row-expiring'
+  return ''
+}
+
+function exportarPagos() {
+  const content = [
+    columns.map(col => col.label).join(','),
+    ...pagos.value.map(p => [
+      p.usuarioId?.email,
+      p.monto,
+      new Date(p.fecha).toISOString(),
+      new Date(new Date(p.fecha).setMonth(new Date(p.fecha).getMonth() + 1)).toISOString()
+    ].join(','))
+  ].join('\r\n')
+
+  const status = exportFile('Reporte_Pagos_Astra.csv', content, 'text/csv')
+  if (status !== true) {
+    $q.notify({ message: 'Error al exportar archivo', color: 'negative' })
+  }
 }
 
 onMounted(() => {
@@ -106,50 +167,45 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
-/* 🌌 Fondo místico general */
 .mystic-bg {
   background: radial-gradient(circle at top center, #2e1065 0%, #0f172a 100%);
   min-height: 100vh;
-  min-width: 100vw;
 }
 
-/* ✨ Título con brillo dorado */
 .mystic-title {
-  font-family: 'Cinzel', serif; /* O la fuente que uses en tu proyecto */
-  text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-  letter-spacing: 2px;
+  font-family: 'Cinzel', serif;
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
 }
 
-/* 🔮 Input de búsqueda con estilo cristalino */
-.mystic-input {
-  background: rgba(88, 28, 135, 0.2);
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
-}
-
-/* 📜 Tabla con bordes brillantes y fondo translúcido */
-.mystic-table {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(10px);
+.mystic-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(8px);
   border-radius: 12px;
 }
 
-/* Personalización de la cabecera de la tabla */
-:deep(.q-table th) {
-  font-size: 1.1em;
-  color: #c4b5fd; /* Color violeta claro */
-  border-bottom: 2px solid rgba(245, 158, 11, 0.3) !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.alert-glow {
+  border-color: #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
 }
 
-/* Filas al hacer hover */
-:deep(.q-table tbody tr:hover) {
-  background: rgba(139, 92, 246, 0.1) !important;
+.export-btn {
+  border: 1px dashed #fbbf24;
+  color: #fbbf24;
+}
+
+.mystic-table {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.row-expiring {
+  background: rgba(251, 191, 36, 0.1) !important;
+}
+
+.row-expired {
+  opacity: 0.5;
+  background: rgba(0,0,0,0.2) !important;
 }
 </style>

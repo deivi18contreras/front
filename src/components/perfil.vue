@@ -48,16 +48,20 @@
       </q-card>
 
       <!-- ESTADO DE SUSCRIPCIÓN -->
-      <q-card class="info-card subscription-card" :class="{ 'is-active': authStore.usuario?.estado === 1 }">
+      <q-card class="info-card subscription-card" :class="{ 'is-active': authStore.usuario?.estado === 1 || authStore.rol === 'admin' }">
         <q-card-section>
           <div class="row items-center justify-between q-mb-xs">
-            <div class="text-weight-bold">Estado de Suscripción</div>
-            <q-badge :color="authStore.usuario?.estado === 1 ? 'positive' : 'warning'" rounded>
-              {{ authStore.usuario?.estado === 1 ? 'ACTIVA' : 'GRATUITA' }}
+            <div class="text-weight-bold">Estado de Cuenta</div>
+            <q-badge :color="(authStore.usuario?.estado === 1 || authStore.rol === 'admin') ? 'positive' : 'warning'" rounded>
+              {{ authStore.rol === 'admin' ? 'ADMINISTRADOR' : (authStore.usuario?.estado === 1 ? 'PREMIUM' : 'GRATUITA') }}
             </q-badge>
           </div>
           
-          <div v-if="authStore.usuario?.estado === 1">
+          <div v-if="authStore.rol === 'admin'">
+            <div class="text-caption text-amber-5">Acceso Total al Sistema</div>
+            <div class="text-h6 text-amber">Suscripción Vitalicia</div>
+          </div>
+          <div v-else-if="authStore.usuario?.estado === 1">
             <div class="text-caption text-grey-4">Tiempo restante:</div>
             <div class="text-h6">{{ remainingSubscription }}</div>
           </div>
