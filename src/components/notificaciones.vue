@@ -1,11 +1,5 @@
 <template>
-  <q-drawer
-    v-model="drawer"
-    side="right"
-    overlay
-    width="420"
-    class="glass-panel text-white"
-  >
+  <q-drawer v-model="drawer" side="right" overlay width="420" class="glass-panel text-white">
     <!-- HEADER -->
     <div class="notif-header">
       <div class="row items-center q-gutter-sm">
@@ -15,14 +9,7 @@
         </div>
       </div>
 
-      <q-btn
-        flat
-        round
-        dense
-        icon="close"
-        color="grey-5"
-        @click="drawer = false"
-      />
+      <q-btn flat round dense icon="close" color="grey-5" @click="drawer = false" />
     </div>
 
     <!-- FILTROS -->
@@ -67,18 +54,8 @@
         </div>
 
         <div class="row q-gutter-sm q-mt-sm">
-          <q-btn
-            size="sm"
-            color="primary"
-            label="View Reading"
-            unelevated
-          />
-          <q-btn
-            size="sm"
-            flat
-            label="Dismiss"
-            color="grey-4"
-          />
+          <q-btn size="sm" color="primary" label="View Reading" unelevated />
+          <q-btn size="sm" flat label="Dismiss" color="grey-4" />
         </div>
       </div>
 
@@ -148,13 +125,7 @@
 
     <!-- FOOTER -->
     <div class="notif-footer">
-      <q-btn
-        outline
-        color="primary"
-        icon="settings"
-        label="Notification Preferences"
-        class="full-width"
-      />
+      <q-btn outline color="primary" icon="settings" label="Notification Preferences" class="full-width" />
     </div>
 
   </q-drawer>
@@ -171,25 +142,24 @@ defineExpose({
 </script>
 
 <style scoped>
-
 .glass-panel {
   background: rgba(25, 16, 34, 0.92);
   backdrop-filter: blur(14px);
-  border-left: 1px solid rgba(255,255,255,0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .notif-header {
   padding: 20px;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .notif-filters {
   padding: 15px;
   display: flex;
   gap: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .notif-content {
@@ -199,8 +169,8 @@ defineExpose({
 }
 
 .notif-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 15px;
   border-radius: 14px;
   margin-bottom: 15px;
@@ -208,7 +178,7 @@ defineExpose({
 }
 
 .notif-card:hover {
-  box-shadow: 0 0 20px rgba(140,43,238,0.15);
+  box-shadow: 0 0 20px rgba(140, 43, 238, 0.15);
 }
 
 .notif-title {
@@ -238,20 +208,20 @@ defineExpose({
 }
 
 .icon-box.blue {
-  background: rgba(76,201,240,0.1);
-  border: 1px solid rgba(76,201,240,0.2);
+  background: rgba(76, 201, 240, 0.1);
+  border: 1px solid rgba(76, 201, 240, 0.2);
   color: #4cc9f0;
 }
 
 .icon-box.primary {
-  background: rgba(140,43,238,0.1);
-  border: 1px solid rgba(140,43,238,0.2);
+  background: rgba(140, 43, 238, 0.1);
+  border: 1px solid rgba(140, 43, 238, 0.2);
   color: #8c2bee;
 }
 
 .icon-box.grey {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #ccc;
 }
 
@@ -276,8 +246,7 @@ defineExpose({
 
 .notif-footer {
   padding: 20px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
-
 </style>

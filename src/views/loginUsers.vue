@@ -102,13 +102,13 @@ const login = async () => {
       password: password.value,
     });
 
-    authStore.token = res.data.token;
+    authStore.token = (res.data.token, res.data.usuario.nombre);
     success(`Bienvenido, ${res.data.usuario.nombre || 'user'}!`, "login success")
 
     const rol = res.data.usuario.rol;
 
     if (rol === "admin") {
-      router.push("/seccionAdmin");
+      router.push("/admin");
     } else {
       router.push("/seccionUser");
     }
@@ -117,9 +117,6 @@ const login = async () => {
     console.log(error.response);
     const mensajeError = error.response?.data?.msg || error.response.data.errors[0].msg ;
     errorAlert(mensajeError)
-
-
-
 
 
   } finally {

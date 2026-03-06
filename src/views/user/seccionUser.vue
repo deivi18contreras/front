@@ -1,5 +1,5 @@
 <template>
-    <q-layout view="lHh Lpr lFf" class="bg-dark text-white">
+    <q-page>
 
         <!-- PERFIL DRAWER -->
         <Perfil ref="perfilRef" />
@@ -101,13 +101,13 @@
             © 2024 Astra AI Numerology
         </q-footer>
 
-    </q-layout>
+    </q-page>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import Perfil from '../components/perfil.vue'
-import Notificaciones from '../components/notificaciones.vue'
+import Perfil from '../../components/perfil.vue'
+import Notificaciones from '../../components/notificaciones.vue'
 
 const perfilRef = ref(null)
 const notifRef = ref(null)
