@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/Auth.js'; // Asegúrate de que este es el
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000/api',
-  //baseURL: 'https://onrender.numerologia.com/api',
+  //baseURL: 'https://backend-production-4304.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json'
   }
