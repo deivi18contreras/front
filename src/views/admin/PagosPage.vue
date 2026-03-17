@@ -1,59 +1,68 @@
 <template>
-  <q-page padding class="mystic-bg text-white">
-    <div class="q-pb-lg text-center">
-      <h1 class="text-h3 text-amber-5 mystic-title q-ma-none">Registro de Pagos</h1>
-      <p class="text-deep-purple-3 q-mt-sm">Control financiero y energía monetaria 💸</p>
-    </div>
-
-    <div class="row q-mb-lg justify-center">
-      <div class="col-12 col-md-6 col-lg-4">
-        <q-input
-          v-model="emailBuscar"
-          dark
-          outlined
-          color="amber"
-          label="Buscar por Email"
-          class="mystic-input"
+  <q-page class="pagos-page animate-fade-in">
+    <div class="row items-center justify-between q-mb-xl">
+      <div>
+        <div class="admin-label">TRANSACCIONES COSMICAS</div>
+        <h1 class="text-h3 text-weight-bold text-primary q-ma-none">Registro de Pagos</h1>
+      </div>
+      
+      <div class="search-box glass">
+        <q-input 
+          v-model="emailBuscar" 
+          placeholder="Buscar por email..." 
+          dark 
+          borderless
+          dense
+          class="q-px-md"
           @keyup.enter="userEmail"
         >
           <template v-slot:append>
-            <q-btn round dense flat icon="search" color="amber" @click="userEmail" />
+            <q-btn flat round icon="search" color="primary" @click="userEmail" />
           </template>
         </q-input>
       </div>
     </div>
 
-    <div class="row justify-center">
-      <div class="col-12 col-lg-10">
-        <q-table
-          :rows="pagos"
-          :columns="columns"
-          row-key="_id"
-          dark
-          flat
-          bordered
-          class="mystic-table"
-          card-class="bg-transparent"
-        >
-          <template v-slot:body-cell-monto="props">
-            <q-td :props="props" class="text-amber text-weight-bold text-h6">
-              ${{ props.row.monto }}
-            </q-td>
-          </template>
-          
-          <template v-slot:body-cell-fecha="props">
-            <q-td :props="props">
-              {{ formatearFecha(props.row.fecha) }}
-            </q-td>
-          </template>
+    <div class="table-container glass q-mb-xl">
+      <q-table
+        :rows="pagos"
+        :columns="columns"
+        row-key="_id"
+        dark
+        flat
+        class="modern-q-table"
+      >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
 
-          <template v-slot:body-cell-cancelacion="props">
-            <q-td :props="props" class="text-deep-purple-3 text-weight-medium">
+        <template v-slot:body-cell-monto="props">
+          <q-td :props="props">
+            <div class="row items-center q-gutter-x-sm">
+              <div class="amount-badge">$</div>
+              <div class="text-h6 text-weight-bold text-primary">{{ props.row.monto }}</div>
+            </div>
+          </q-td>
+        </template>
+        
+        <template v-slot:body-cell-fecha="props">
+          <q-td :props="props" class="text-muted">
+            {{ formatearFecha(props.row.fecha) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-cancelacion="props">
+          <q-td :props="props">
+            <q-badge color="secondary" outline class="q-py-xs q-px-sm">
               {{ calcularCancelacion(props.row.fecha) }}
-            </q-td>
-          </template>
-        </q-table>
-      </div>
+            </q-badge>
+          </q-td>
+        </template>
+      </q-table>
     </div>
   </q-page>
 </template>
@@ -62,43 +71,43 @@
 import { onMounted, ref } from 'vue'
 import { getData } from '../../services/services'
 
-let pagos = ref([])
-let emailBuscar = ref("")
+const pagos = ref([])
+const emailBuscar = ref("")
 
-// 📌 Listar pagos
+const columns = [
+  { name: 'usuario', label: 'USUARIO (EMAIL)', field: row => row.idusuario?.email || 'N/A', align: 'left' },
+  { name: 'monto', label: 'MONTO', field: 'monto', align: 'left' },
+  { name: 'fecha', label: 'FECHA PAGO', field: 'fecha', align: 'left' },
+  { name: 'cancelacion', label: 'PRÓXIMO VENCIMIENTO', align: 'left' }
+]
+
 async function listPagos(){
   try {
     let res = await getData("pagos")
     pagos.value = res 
-    
-    console.log(res);
-    
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
-// 📌 Buscar por email (opcional)
 async function userEmail(){
   try {
     let res = await getData(`pagos?email=${emailBuscar.value}`)
     pagos.value = res
-    console.log(pagos.value);
-    
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
  
 function formatearFecha(fecha){
   const date = new Date(fecha)
-  return date.toLocaleDateString()
+  return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
 }
  
 function calcularCancelacion(fecha){
   const date = new Date(fecha)
   date.setMonth(date.getMonth() + 1)
-  return date.toLocaleDateString()
+  return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 onMounted(() => {
@@ -106,50 +115,67 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
-/* 🌌 Fondo místico general */
-.mystic-bg {
-  background: radial-gradient(circle at top center, #2e1065 0%, #0f172a 100%);
-  min-height: 100vh;
-  min-width: 100vw;
+.pagos-page {
+  padding-bottom: 40px;
 }
 
-/* ✨ Título con brillo dorado */
-.mystic-title {
-  font-family: 'Cinzel', serif; /* O la fuente que uses en tu proyecto */
-  text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+.admin-label {
+  font-size: 0.7rem;
+  font-weight: 800;
   letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
 }
 
-/* 🔮 Input de búsqueda con estilo cristalino */
-.mystic-input {
-  background: rgba(88, 28, 135, 0.2);
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
+.search-box {
+  width: 320px;
+  border-radius: 16px;
 }
 
-/* 📜 Tabla con bordes brillantes y fondo translúcido */
-.mystic-table {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
+.table-container {
+  border-radius: 24px;
+  overflow: hidden;
 }
 
-/* Personalización de la cabecera de la tabla */
+.modern-q-table {
+  background: transparent !important;
+}
+
 :deep(.q-table th) {
-  font-size: 1.1em;
-  color: #c4b5fd; /* Color violeta claro */
-  border-bottom: 2px solid rgba(245, 158, 11, 0.3) !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  text-align: left;
+  padding: 20px 24px;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  color: var(--text-muted) !important;
+  letter-spacing: 1px !important;
+  border-bottom: 1px solid var(--glass-border) !important;
 }
 
-/* Filas al hacer hover */
-:deep(.q-table tbody tr:hover) {
-  background: rgba(139, 92, 246, 0.1) !important;
+:deep(.q-table td) {
+  padding: 16px 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+  font-size: 0.95rem !important;
 }
-</style>
+
+:deep(.q-table tbody tr:hover) {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.amount-badge {
+  width: 24px;
+  height: 24px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 800px) {
+  .search-box { width: 100%; margin-top: 20px; }
+}
+</style>

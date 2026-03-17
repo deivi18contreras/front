@@ -1,72 +1,80 @@
 <template>
-  <q-page class="login-page bg-dark text-white">
-
+  <q-page class="login-page">
     <div class="login-container">
-
       <!-- PANEL IZQUIERDO -->
       <div class="visual-panel">
-
         <img class="background-image"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmb8tUiU6e7G_8n-DBzt9reT9DVwK8UjFK4y3FZpZ0pDA1SRDCCcBnmw3Svrzq8A3N6gGw1RULmBwz2UNljeAzPLYen7GxchrrobfkpZ3lDjNrq3YHHxeWGAa_sQj7-xaNNNzlnHU7HkTvO1HMXdJ5XrU7txQ2DZnzRwnZjcg4uKENJSWnhma4JcyBELSI9-3YTdA2rlNgC91DoPkubXHoM30JKbq3RuOG9nERkJJd5xhH_F3WsX1eJIW8TQazIgNGN-6lTahw1Ig" />
-
+          src="https://images.unsplash.com/photo-1515252047806-613ecf789d9b?auto=format&fit=crop&q=80" />
         <div class="overlay"></div>
 
-        <div class="numerology-grid">
-          <span>11:11</span>
-          <span>333</span>
-          <span>777</span>
-          <span>444</span>
-          <span>999</span>
-          <span>222</span>
+        <div class="floating-numbers">
+          <span v-for="n in numbers" :key="n" class="floating-number">{{ n }}</span>
         </div>
 
-        <div class="title-panel">
-          <h1>Numerology</h1>
-          <p>ADMINISTRATIVE PORTAL</p>
+        <div class="title-panel animate-fade-in">
+          <div class="brand-badge">PREMIUM ACCESS</div>
+          <h1>Numerologia</h1>
+          <p>EXPLORA TU DESTINO COSMICO</p>
         </div>
-
       </div>
 
       <!-- PANEL DERECHO -->
       <div class="form-panel">
-
-        <q-card class="glass-container">
-
-          <q-card-section class="text-center">
-            <div class="text-h5">Authentication</div>
-            <div class="subtitle">Secure Entry Required</div>
+        <div class="bg-glow"></div>
+        <q-card class="glass-container animate-fade-in">
+          <q-card-section class="text-center q-pb-none">
+            <div class="auth-icon-container">
+              <q-icon name="auto_awesome" size="32px" color="primary" />
+            </div>
+            <div class="text-h4 text-weight-bold q-mt-md">Bienvenido</div>
+            <div class="subtitle text-uppercase q-mt-xs">Portal de Autenticación</div>
           </q-card-section>
 
-          <q-card-section>
-
-            <q-input filled v-model="usuario" label="Email" dark class="q-mb-md">
+          <q-card-section class="q-pt-xl">
+            <q-input 
+              v-model="usuario" 
+              label="Correo Electrónico" 
+              dark 
+              filled
+              class="q-mb-lg"
+            >
               <template v-slot:prepend>
-                <q-icon name="alternate_email" />
+                <q-icon name="alternate_email" color="primary" />
               </template>
             </q-input>
 
-            <q-input filled v-model="password" label="Secret Key" type="password" dark>
+            <q-input 
+              v-model="password" 
+              label="Clave Secreta" 
+              type="password" 
+              dark 
+              filled
+            >
               <template v-slot:prepend>
-                <q-icon name="lock_open" />
+                <q-icon name="lock_open" color="primary" />
               </template>
             </q-input>
-
           </q-card-section>
 
-          <q-card-actions vertical>
-
-            <q-btn color="primary" label="Access Portal" class="full-width q-mb-sm" :loading="loading" @click="login" />
-            <q-btn flat label="Crear Usuario" class="full-width" @click="creacionUsuarios" />
-            <q-btn flat no-caps label="¿Olvidaste tu contraseña?" class="full-width text-caption q-mt-none"
-              style="opacity: 0.7;" @click="recuperarPassword" />
-
+          <q-card-actions vertical class="q-px-md q-pb-lg">
+            <q-btn 
+              color="primary" 
+              label="Acceder al Portal" 
+              class="full-width glow-primary" 
+              size="lg"
+              unelevated
+              :loading="loading" 
+              @click="login" 
+            />
+            
+            <div class="row items-center q-mt-md justify-between full-width">
+              <q-btn flat dense no-caps label="Crear una cuenta" color="text-muted" @click="creacionUsuarios" />
+              <q-btn flat dense no-caps label="¿Olvidaste tu clave?" color="text-muted" style="opacity: 0.7;" @click="recuperarPassword" />
+            </div>
           </q-card-actions>
-
         </q-card>
       </div>
-
     </div>
-
   </q-page>
 </template>
 
@@ -78,7 +86,6 @@ import { ref } from "vue";
 import { useNotifications } from "../composables/useNotifications.js";
 import { useQuasar } from "quasar";
 
-
 const usuario = ref("");
 const password = ref("");
 const loading = ref(false)
@@ -88,8 +95,9 @@ const router = useRouter();
 const authStore = useAuthStore();
 const { success, errorAlert } = useNotifications()
 
-const login = async () => {
+const numbers = ['11:11', '333', '777', '444', '999', '222'];
 
+const login = async () => {
   if (!usuario.value || !password.value) {
     errorAlert("Por favor, rellene todos los campos", "Se requiere correo electrónico y contraseña");
     return;
@@ -103,25 +111,17 @@ const login = async () => {
     });
 
     authStore.token = res.data.token;
-    success(`Bienvenido, ${res.data.usuario.nombre || 'user'}!`, "login success")
+    success(`¡Bienvenido, ${res.data.usuario.nombre || 'usuario'}!`);
 
     const rol = res.data.usuario.rol;
-
     if (rol === "admin") {
       router.push("/admin");
     } else {
       router.push("/seccionUser");
     }
-
   } catch (error) {
-    console.log(error.response);
-    const mensajeError = error.response?.data?.msg || error.response.data.errors[0].msg ;
+    const mensajeError = error.response?.data?.msg || "Error de autenticación";
     errorAlert(mensajeError)
-
-
-
-
-
   } finally {
     loading.value = false
   }
@@ -130,7 +130,6 @@ const login = async () => {
 const creacionUsuarios = () => {
   router.push("/crear-user");
 };
-
 
 const recuperarPassword = () =>{
   $q.dialog({
@@ -146,18 +145,16 @@ const recuperarPassword = () =>{
     cancel: true,
     persistent: true
   }).onOk(async(emailSolicitado) =>{
-
     loading.value = true;
-
     try {
-     const res = await postData("usuario/forgot-password", {email: emailSolicitado});
-     success("Código enviado", res.data.mensaje);
-     pedirNuevoPassword();
-     
+      const res = await postData("usuario/forgot-password", {email: emailSolicitado});
+      success("Código enviado", res.data.mensaje);
+      pedirNuevoPassword();
     } catch (error) {
-      const mensaje = error.response?.data?.msg || "Error al solicitar recuperación";
-      errorAlert("Error", mensaje);
-    }loading.value = false;
+      errorAlert("Error", error.response?.data?.msg || "Error al solicitar recuperación");
+    } finally {
+      loading.value = false;
+    }
   })
 }
 
@@ -176,8 +173,6 @@ const pedirNuevoPassword = () => {
     cancel: true,
     persistent: true
   }).onOk(async (codigoRecibido) => {
-    
-  
     $q.dialog({
       title: 'Nueva Clave',
       message: 'Escribe tu nueva contraseña (mínimo 8 caracteres):',
@@ -192,54 +187,42 @@ const pedirNuevoPassword = () => {
     }).onOk(async (newPassword) => {
       loading.value = true;
       try {
-        
         await postData("usuario/reset-password", { 
           token: codigoRecibido, 
           newPassword: newPassword
         });
-
         success("¡Éxito!", "Contraseña actualizada correctamente");
       } catch (error) {
-        const msg = error.response?.data?.mensaje || "Código inválido o expirado";
-        errorAlert("Error", msg);
+        errorAlert("Error", error.response?.data?.mensaje || "Código inválido");
       } finally {
         loading.value = false;
       }
     });
   });
 };
-
 </script>
 
 <style scoped>
-body {
-  margin: 0;
-  padding: 0;
-}
-
 .login-page {
-  width: 100vw;
-  /* 👈 FORZAMOS ancho completo */
   height: 100vh;
   overflow: hidden;
+  background: var(--bg-dark);
 }
-
-/* CONTENEDOR PRINCIPAL */
 
 .login-container {
   display: flex;
-
+  height: 100%;
 }
 
-/* ================= PANEL VISUAL ================= */
-
+/* PANEL VISUAL */
 .visual-panel {
   position: relative;
-  width: 50vw;
-  /* 👈 Mitad real de pantalla */
-  height: 100vh;
-  background: #0a0a0c;
+  width: 55vw;
+  height: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .background-image {
@@ -248,152 +231,131 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.6;
+  filter: saturate(0.5) brightness(0.4);
 }
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle, transparent, #0a0a0c);
+  background: linear-gradient(to right, transparent, var(--bg-dark));
 }
 
-.numerology-grid {
+.floating-numbers {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  place-items: center;
-  opacity: 0.15;
-  font-size: 64px;
-  color: var(--q-primary);
-  font-weight: 200;
+  pointer-events: none;
+}
+
+.floating-number {
+  position: absolute;
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--primary);
+  opacity: 0.05;
+  filter: blur(2px);
+  animation: float 20s infinite linear;
+}
+
+.floating-number:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.floating-number:nth-child(2) { top: 60%; left: 20%; animation-delay: -5s; }
+.floating-number:nth-child(3) { top: 30%; left: 70%; animation-delay: -10s; }
+.floating-number:nth-child(4) { top: 80%; left: 60%; animation-delay: -15s; }
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-50px) rotate(10deg); }
+  100% { transform: translateY(0) rotate(0deg); }
 }
 
 .title-panel {
-  position: absolute;
-  top: 80px;
-  left: 80px;
+  position: relative;
+  text-align: left;
+  padding: 80px;
+  width: 100%;
+}
+
+.brand-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
 }
 
 .title-panel h1 {
-  font-size: 70px;
-  color: var(--q-primary);
-  letter-spacing: 10px;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -2px;
 }
 
 .title-panel p {
-  font-size: 18px;
-  opacity: 0.6;
+  font-size: 1.2rem;
+  color: var(--text-muted);
   letter-spacing: 4px;
+  margin-top: 10px;
 }
 
-/* ================= PANEL FORM ================= */
-
+/* PANEL FORM */
 .form-panel {
-  width: 50vw;
-  /* 👈 Mitad real */
-  height: 100vh;
-  background: #4A148C;
+  width: 45vw;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 60px;
+  background: var(--bg-dark);
+  padding: 40px;
 }
 
-/* CARD */
+.bg-glow {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+  filter: blur(60px);
+  opacity: 0.3;
+}
 
 .glass-container {
   width: 100%;
-  max-width: 600px;
-  padding: 35px;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(18px);
-  border-radius: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  padding: 20px;
 }
 
-/* TEXTOS */
+.auth-icon-container {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-glow);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
 
 .subtitle {
-  font-size: 15px;
-  opacity: 0.4;
+  font-size: 0.8rem;
+  color: var(--text-muted);
   letter-spacing: 2px;
 }
 
-/* INPUTS */
-
-.q-field {
-  font-size: 18px;
+@media (max-width: 1024px) {
+  .login-container { flex-direction: column; }
+  .visual-panel { width: 100%; height: 40vh; }
+  .form-panel { width: 100%; height: 60vh; padding: 20px; }
+  .title-panel { padding: 40px; }
+  .overlay { background: linear-gradient(to bottom, transparent, var(--bg-dark)); }
 }
-
-/* BOTONES */
-
-.q-btn {
-  height: 56px;
-  font-size: 15px;
-}
-
-/* VERSION */
-
-.version-text {
-  position: absolute;
-  bottom: 40px;
-  font-size: 15px;
-  opacity: 0.35;
-}
-
-/* ================= CELULAR ================= */
-
-@media (max-width: 768px) {
-
-  .login-container {
-    flex-direction: column;
-  }
-
-  .visual-panel,
-  .form-panel {
-    width: 100vw;
-    height: 50vh;
-  }
-
-  .title-panel {
-    top: 35px;
-    left: 25px;
-  }
-
-  .title-panel h1 {
-    font-size: 32px;
-    letter-spacing: 4px;
-  }
-
-  .title-panel p {
-    font-size: 11px;
-  }
-
-  .numerology-grid {
-    font-size: 26px;
-  }
-
-  .form-panel {
-    padding: 20px;
-  }
-
-  .glass-container {
-    border-radius: 18px;
-  }
-
-  .q-field {
-    font-size: 15px;
-  }
-
-  .q-btn {
-    height: 46px;
-  }
-
-  .version-text {
-    font-size: 12px;
-  }
-}
-</style>
+</style>
